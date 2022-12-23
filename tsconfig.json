@@ -1,0 +1,23 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.web.json",
+  "include": [
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "auto-imports.d.ts", //解决 vue文件中 自动引入API 波浪线报错的问题
+    "components.d.ts" // 解决 自动引入组件 报错波浪线的问题
+  ],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@": ["src"],
+      "@/*": ["./src/*"]
+    }
+  },
+
+  "references": [
+    {
+      "path": "./tsconfig.config.json"
+    }
+  ]
+}
