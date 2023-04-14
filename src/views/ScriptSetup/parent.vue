@@ -20,6 +20,7 @@
       </template>
     </Suspense>
     <!-- 动态组件 -->
+    <div>动态组件</div>
     <Dynamic />
     <!-- 内置组件transition -->
     <tran />
@@ -33,14 +34,39 @@
     <p>fullName:{{ fullName }}</p>
     <a-input v-model="fullName2" />
     <a-button type="primary" @click="changeFullName">停止侦听watchEffect:{{ fullName }}</a-button>
+    <a-button type="primary" @click="changeFurit">改变fruit的值</a-button>
+    <a-button type="primary" @click="changeToolAndPhone">changeToolAndPhone</a-button>
+    <hr />
+    <vModel />
+    <hr />
+    <div>2秒后改变网页标签标题</div>
+    <useHooks />
+    <!-- h函数 -->
+    <render />
+    <!-- 格式化时间戳 -->
+    <div v-formatTimestamp="'YYYY-MM-DD'">{{ timeStamp }}</div>
+    <!-- 全局name -->
+    <!-- <div>{{ $name }}</div> -->
+    <!-- <div>测试{{ $name }}</div> -->
+    <!-- 全局组件 -->
+    <hello-world />
+    <h2 @click="changeMessage" ref="h2dom">{{ message }}</h2>
+    <cookies />
+    <piniaStore></piniaStore>
   </div>
 </template>
+
 <script setup lang="ts">
 import child from './child.vue'
 import GrandSon from './GrandSon.vue'
 import Dynamic from './dynamic.vue'
 import tran from './transition.vue'
+import vModel from './v-model.vue'
+import useHooks from './useHooks.vue'
+import render from './render.vue'
 import debounceRef from '@/hooks/useDebounceRef'
+import cookies from './cookie.vue'
+import piniaStore from './Pinia.vue'
 const childCli = (val: any) => {
   console.log('childCli', val)
 }
@@ -86,7 +112,7 @@ provide('state', state)
 // pnpm add mitt
 // 异步组件
 const asynCom = defineAsyncComponent(() => import('./AsyncComponent.vue'))
-// readonly API, readonly会返回原生对象的只读代理
+// readonly API, readonly会返回原生对象的只读代理,只能使用不能修改
 const r = reactive({
   a: 'b',
   c: 'a'
@@ -114,7 +140,7 @@ const fullName2 = computed({
 })
 //  ------------侦听器 watch watchEffect-------------
 /*
- *  1.watchEffect会自动侦听函数中收集的依赖，初始化的时候默认执行一次
+ *  1.watchEffect会自动侦听函数中收集的依赖，初始化的时候默认执行一次，并且收集依赖
  *  2.返回值是一个函数，调用函数就会停止侦听
  *  3.onInvalidate清楚副作用
  * 什么是清除副作用呢？
@@ -137,6 +163,75 @@ const changeFullName = () => {
     stopWatch()
   }
 }
+// 改变watchEffect的执行时机
+watchEffect(
+  () => {
+    console.log('son组件的打印', son.value) // 只是这样的话，会打印两次：null 和 元素
+  },
+  {
+    flush: 'post' // 这一行代码就只会打印出元素；flush的默认值是pre，它会在元素 挂载或者 更新 之前执行
+  }
+)
+//  ------------侦听器 watch -------------
+/*
+   1.懒执行，第一次页面加载不会执行，除非设置 immediate:true
+   2.可访问侦听状态更新前后的值
+   3.第一个参数是 被侦听的对象，第二个参数是回调函数，第三个参数是配置项
+*/
+const fruit = ref('苹果')
+watch(
+  fruit,
+  (newValue, oldValue) => {
+    console.log('侦听fruit', newValue)
+  },
+  { immediate: true, deep: false }
+)
+const changeFurit = () => {
+  fruit.value = '桃子'
+}
+// 侦听多个数据源，使用数组的形式
+let tool = ref('鼠标')
+let phone = ref('iPhone')
+watch([tool, phone], (n, o) => {
+  console.log('侦听多个', n) //打印的值是 数组形式 ['键盘'，'三星'']
+})
+const changeToolAndPhone = () => {
+  tool.value = '键盘'
+  phone.value = '三星'
+}
+// 对非响应式数据进行侦听，第1个参数要使用回调函数的形式
+const cup = reactive({
+  one: '马克杯',
+  two: '普通杯子'
+})
+watch(
+  () => ({ ...cup }), //直接展开cup，数据不是响应式的，所以要用回调函数
+  (n, o) => console.log('非响应式数据', n) //打印出的是个对象的形式
+)
+setTimeout(() => {
+  cup.one = '保温杯'
+}, 1000)
+/*
+  自定义指令
+*/
+// 格式化时间戳
+const timeStamp = ref(+new Date())
+/**
+ *  nextTick
+ */
+let message = ref('恰似一江春水向东流')
+let h2dom = ref(null)
+const changeMessage = () => {
+  message.value = '今朝有酒今朝醉'
+  nextTick(() => {
+    console.log('h2dom', h2dom)
+  })
+}
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+// 渲染 h函数创造h2标签的类名
+.render {
+  color: red;
+}
+</style>

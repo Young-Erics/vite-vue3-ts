@@ -5,7 +5,7 @@
     </button>
     <!-- 对于缓存的组件来说，再次进入时，我们是不会执行created或者mounted等生命周期函数的 -->
 
-    <KeepAlive>
+    <KeepAlive exclude="homee">
       <component :is="currentTab.tabCom"></component>
     </KeepAlive>
   </div>

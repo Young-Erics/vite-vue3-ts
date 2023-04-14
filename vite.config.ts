@@ -26,10 +26,10 @@ export default defineConfig(({ mode }) => {
     base: viteEnv.VITE_BASE, //公共基础路径
     server: {
       host: '0.0.0.0',
-      port: 8080,
+      port: 8081,
       open: true,
       // 端口占用直接退出
-      strictPort: true
+      strictPort: false
       // 本地服务 CORS 是否开启
       // cors: true,
       // proxy: {

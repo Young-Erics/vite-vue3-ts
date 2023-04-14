@@ -6,6 +6,7 @@
     <h5>$parent的state.name:{{}}</h5>
     <slot :data="props.msg" />
     <p>readonly:{{ props.read?.a }}</p>
+    <p>aaaa</p>
   </div>
 </template>
 
